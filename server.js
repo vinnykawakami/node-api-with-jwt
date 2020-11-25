@@ -3,6 +3,7 @@ require('dotenv-safe').config();
 
 // main app
 const app = require('./src/app');
+const { handleError } = require('./src/helpers/customErrors');
 
 // import packages/modules/files
 const http = require('http');
@@ -30,6 +31,10 @@ const serverOptions = {
 // Listen both http & https ports
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(serverOptions, app);
+//  custom errorHandler
+app.use((err, req, res, next) => {
+    handleError(err, res);
+});
 
 httpServer.listen(PORT, () => {
     console.log(`HTTP Server listening on port ${PORT}`);
