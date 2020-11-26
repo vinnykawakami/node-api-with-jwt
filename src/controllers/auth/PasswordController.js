@@ -1,5 +1,4 @@
 require('dotenv').config();
-const bcrypt = require('bcryptjs');
 const dbClient = require('../../config/dbMySQL');
 const utils = require('../../helpers/utils');;
 const { ErrorHandler } = require('../../helpers/customErrors');

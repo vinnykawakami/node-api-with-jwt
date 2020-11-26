@@ -1,5 +1,6 @@
 require('dotenv').config();
-const bcrypt = require('bcryptjs');
+// const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken");
 const dbClient = require('../../config/dbMySQL');
 const utils = require('../../helpers/utils');;
 const { ErrorHandler } = require('../../helpers/customErrors');
@@ -28,11 +29,16 @@ class AuthController {
                     if (!err) {
                         if (rows.length > 0) {
                             if (utils.isPasswordMatch(req.body.password, rows[0].password) === true) {
+                                var token = utils.generateAccessToken(req.body.login);
                                 res.status(200).json({
                                     status: "success",
                                     statusCode: 200,
                                     message: "Login successfully",
-                                    user: rows
+                                    user: rows,
+                                    auth: {
+                                        status: true,
+                                        token: token
+                                    }
                                 });
                             } else {
                                 res.status(403).json({
@@ -50,7 +56,8 @@ class AuthController {
                                 status: "success",
                                 statusCode: 200,
                                 message: "User not found",
-                                user: {}
+                                user: {},
+                                auth: {}
                             });
                         }
                     } else {

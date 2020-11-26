@@ -1,7 +1,16 @@
+require('dotenv').config();
+
 const bcrypt = require('bcryptjs');
 const merge = require('merge');
+const jwt = require("jsonwebtoken");
 const { ErrorHandler } = require('./customErrors');
+const privateKey = process.env.JWT_SECRET;
 
+exports.generateAccessToken = (username) => {
+    return jwt.sign({ username }, privateKey, {
+        expiresIn: '900s'
+    });
+}
 exports.isValidCPF = (cpf) => {
     if (typeof cpf !== "string") return false
     cpf = cpf.replace(/[\s.-]*/igm, '')
