@@ -44,13 +44,16 @@ app.use(function (req, res, next) {
     }
 });
 
-app.use('/dd', (req, res) => {
-    res.status(200).json({message: 'Ok google'});
-})
+// Routes
+const indexRouter = require('./routes/index');
+const authRouter = require('./routes/auth');
+
+app.use('/', indexRouter);
+app.use('/auth', authRouter);
 
 // Response if not find any route
 app.use((req, res, next) => {
-    const error = new Error('Akuma no Mi...Not Found! XD');
+    const error = new Error('GOMU GOMU NO... NOT FOUND!');
     error.statusCode = 404;
     error.data = {};
     next(error);
