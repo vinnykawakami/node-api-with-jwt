@@ -5,8 +5,10 @@ const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cors = require('cors');
+const jwt = require("jsonwebtoken");
 const app = express();
 const { ErrorHandler } = require('./helpers/customErrors');
+const privateKey = process.env.JWT_SECRET;
 
 // middlewares
 app.use(cors());
@@ -44,12 +46,28 @@ app.use(function (req, res, next) {
     }
 });
 
+function authenticateToken(req, res, next) {
+    // Gather the jwt access token from the request header
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    if (token == null) return res.status(401).send({ auth: false, message: 'Token not provided.' });
+
+    jwt.verify(token, privateKey, (err, user) => {
+        console.log(err)
+        if (err) return res.status(403).send({ auth: false, message: 'Invalid token!' });
+        req.user = user
+        next() // pass the execution off to whatever request the client intended
+    })
+}
+
 // Routes
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
+const userRouter = require('./routes/user');
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
+app.use('/user', authenticateToken, userRouter);
 
 // Response if not find any route
 app.use((req, res, next) => {
