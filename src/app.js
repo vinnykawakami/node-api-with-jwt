@@ -54,6 +54,7 @@ app.use('/auth', authRouter);
 // Response if not find any route
 app.use((req, res, next) => {
     const error = new Error('GOMU GOMU NO... NOT FOUND!');
+    error.status = 'error';
     error.statusCode = 404;
     error.data = {};
     next(error);
@@ -62,6 +63,7 @@ app.use((req, res, next) => {
 // default custom ErrorHandler
 app.use((error, req, res, next) => {
     throw new ErrorHandler(
+        error.status,
         error.statusCode || 500, 
         error.message, 
         error.data);
